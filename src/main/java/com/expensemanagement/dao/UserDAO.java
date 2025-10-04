@@ -1,9 +1,11 @@
 package com.expensemanagement.dao;
 
+import java.util.List;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import com.expensemanagement.model.User;
 import com.expensemanagement.utility.DBConnectionUtil;
@@ -79,5 +81,40 @@ public class UserDAO {
         }
         
         return user;
+    }
+    
+ // Add this method inside the UserDAO class
+    public List<User> getUsersByCompanyId(int companyId) throws SQLException {
+        List<User> userList = new ArrayList<>();
+        String sql = "SELECT * FROM users WHERE company_id = ?";
+        
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try {
+            conn = DBConnectionUtil.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, companyId);
+            
+            rs = pstmt.executeQuery();
+            
+            while (rs.next()) {
+                User user = new User();
+                user.setUserId(rs.getInt("user_id"));
+                user.setCompanyId(rs.getInt("company_id"));
+                user.setEmail(rs.getString("email"));
+                user.setFullName(rs.getString("full_name"));
+                user.setRole(rs.getString("role"));
+                user.setManagerId(rs.getObject("manager_id", Integer.class));
+                userList.add(user);
+            }
+        } finally {
+            if (rs != null) rs.close();
+            if (pstmt != null) pstmt.close();
+            if (conn != null) conn.close();
+        }
+        
+        return userList;
     }
 }
