@@ -16,10 +16,12 @@ public class Expense {
     private Timestamp createdAt;
     private Timestamp updatedAt;
     
-    // NEW FIELD
-    private String employeeName;
+    // --- NEW FIELDS ---
+    private Integer flowId; // Can be null
+    private String employeeName; // For manager view
 
-    // Getters and Setters...
+    // Getters and Setters for all fields...
+    
     public int getExpenseId() { return expenseId; }
     public void setExpenseId(int expenseId) { this.expenseId = expenseId; }
     public int getUserId() { return userId; }
@@ -40,8 +42,10 @@ public class Expense {
     public void setCreatedAt(Timestamp createdAt) { this.createdAt = createdAt; }
     public Timestamp getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(Timestamp updatedAt) { this.updatedAt = updatedAt; }
-    
-    // NEW GETTER/SETTER
+
+    // --- GETTERS AND SETTERS FOR NEW FIELDS ---
+    public Integer getFlowId() { return flowId; }
+    public void setFlowId(Integer flowId) { this.flowId = flowId; }
     public String getEmployeeName() { return employeeName; }
     public void setEmployeeName(String employeeName) { this.employeeName = employeeName; }
 }

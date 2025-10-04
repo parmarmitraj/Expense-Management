@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.SQLException;
-
 import com.expensemanagement.dao.ExpenseDAO;
 import com.expensemanagement.model.Expense;
 import com.expensemanagement.model.User;
@@ -23,6 +22,7 @@ public class AddExpenseServlet extends HttpServlet {
         User user = (User) request.getSession().getAttribute("user");
 
         try {
+            // ... (getting parameters remains the same)
             Date expenseDate = Date.valueOf(request.getParameter("expenseDate"));
             String category = request.getParameter("category");
             BigDecimal amount = new BigDecimal(request.getParameter("amount"));
@@ -37,6 +37,10 @@ public class AddExpenseServlet extends HttpServlet {
             expense.setCurrency(currency.toUpperCase());
             expense.setDescription(description);
 
+            // --- NEW LINE ---
+            // Assign the new expense to our hardcoded sample approval flow (ID=1)
+            expense.setFlowId(1);
+
             ExpenseDAO expenseDAO = new ExpenseDAO();
             expenseDAO.addExpense(expense);
             
@@ -44,7 +48,6 @@ public class AddExpenseServlet extends HttpServlet {
 
         } catch (SQLException | IllegalArgumentException e) {
             e.printStackTrace();
-            // Optionally, redirect to an error page
             response.sendRedirect("employee_dashboard.jsp?error=true");
         }
     }
