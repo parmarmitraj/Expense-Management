@@ -4,15 +4,17 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
-import com.expensemanagement.dao.UserDAO;
-import com.expensemanagement.model.User;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+
+import com.expensemanagement.dao.ExpenseDAO;
+import com.expensemanagement.dao.UserDAO;
+import com.expensemanagement.model.Expense;
+import com.expensemanagement.model.User;
 
 @WebServlet("/dashboard")
 public class DashboardServlet extends HttpServlet {
@@ -21,7 +23,6 @@ public class DashboardServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession(false);
         
-        // Double-check session and user to be safe
         if (session == null || session.getAttribute("user") == null) {
             response.sendRedirect("login.jsp");
             return;
@@ -33,21 +34,37 @@ public class DashboardServlet extends HttpServlet {
             UserDAO userDAO = new UserDAO();
             try {
                 List<User> userList = userDAO.getUsersByCompanyId(user.getCompanyId());
+                List<User> managerList = userDAO.getManagersByCompanyId(user.getCompanyId());
                 request.setAttribute("userList", userList);
+                request.setAttribute("managerList", managerList);
                 request.getRequestDispatcher("admin_dashboard.jsp").forward(request, response);
             } catch (SQLException e) {
-                e.printStackTrace(); // This prints the error to your Eclipse console
-                
-                // --- THIS IS THE FIX ---
-                // Tell the browser what to do in case of an error
-                request.setAttribute("errorMessage", "Error fetching user data from the database.");
+                e.printStackTrace();
+                request.setAttribute("errorMessage", "Error fetching admin data.");
                 request.getRequestDispatcher("error.jsp").forward(request, response);
-                // ---------------------
             }
         } else if ("Manager".equals(user.getRole())) {
-            request.getRequestDispatcher("manager_dashboard.jsp").forward(request, response);
-        } else {
-            request.getRequestDispatcher("employee_dashboard.jsp").forward(request, response);
+            ExpenseDAO expenseDAO = new ExpenseDAO();
+            try {
+                List<Expense> pendingApprovals = expenseDAO.getPendingExpensesForManager(user.getUserId());
+                request.setAttribute("pendingApprovals", pendingApprovals);
+                request.getRequestDispatcher("manager_dashboard.jsp").forward(request, response);
+            } catch (SQLException e) {
+                e.printStackTrace();
+                request.setAttribute("errorMessage", "Error fetching manager data.");
+                request.getRequestDispatcher("error.jsp").forward(request, response);
+            }
+        } else { // Employee
+            ExpenseDAO expenseDAO = new ExpenseDAO();
+            try {
+                List<Expense> expenseList = expenseDAO.getExpensesByUserId(user.getUserId());
+                request.setAttribute("expenseList", expenseList);
+                request.getRequestDispatcher("employee_dashboard.jsp").forward(request, response);
+            } catch (SQLException e) {
+                e.printStackTrace();
+                request.setAttribute("errorMessage", "Error fetching expense data.");
+                request.getRequestDispatcher("error.jsp").forward(request, response);
+            }
         }
     }
 }

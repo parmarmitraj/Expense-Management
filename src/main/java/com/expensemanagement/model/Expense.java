@@ -12,9 +12,12 @@ public class Expense {
     private String currency;
     private String description;
     private Date expenseDate;
-    private String status; // "Pending", "Approved", "Rejected"
+    private String status;
     private Timestamp createdAt;
     private Timestamp updatedAt;
+    
+    // NEW FIELD
+    private String employeeName;
 
     // Getters and Setters...
     public int getExpenseId() { return expenseId; }
@@ -37,4 +40,8 @@ public class Expense {
     public void setCreatedAt(Timestamp createdAt) { this.createdAt = createdAt; }
     public Timestamp getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(Timestamp updatedAt) { this.updatedAt = updatedAt; }
+    
+    // NEW GETTER/SETTER
+    public String getEmployeeName() { return employeeName; }
+    public void setEmployeeName(String employeeName) { this.employeeName = employeeName; }
 }

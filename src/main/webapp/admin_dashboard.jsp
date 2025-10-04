@@ -65,13 +65,34 @@
                 <label for="password">Password:</label>
                 <input type="password" name="password" required>
                 <label for="role">Role:</label>
-                <select name="role">
+                <select name="role" id="roleSelect">
                     <option value="Employee">Employee</option>
                     <option value="Manager">Manager</option>
                 </select>
+                <div id="managerSelection" style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    <label for="managerId">Assign to Manager:</label>
+                    <select name="managerId">
+                        <option value="0">-- No Manager --</option>
+                        <c:forEach var="manager" items="${managerList}">
+                            <option value="${manager.userId}"><c:out value="${manager.fullName}"/></option>
+                        </c:forEach>
+                    </select>
+                </div>
                 <button type="submit">Add User</button>
             </form>
         </div>
     </div>
+
+    <script>
+        // Optional: Hide manager dropdown if the selected role is "Manager"
+        document.getElementById('roleSelect').addEventListener('change', function() {
+            var managerDiv = document.getElementById('managerSelection');
+            if (this.value === 'Manager') {
+                managerDiv.style.display = 'none';
+            } else {
+                managerDiv.style.display = 'flex';
+            }
+        });
+    </script>
 </body>
 </html>
